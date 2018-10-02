@@ -11,12 +11,13 @@ from os.path import expanduser
 
 
 class Host:
-    def __init__(self, team_number, hostname, last_octet=0, base_ip=[172, 25, 20, 0], username="root", password="changeme"):
+    def __init__(self, team_number, name, last_octet=0, base_ip=[172, 25, 20, 0], username="root", password="changeme"):
         self.ip = "%d.%d.%d.%d" % (base_ip[0], base_ip[1], base_ip[2] + team_number, last_octet)
         self.last_octet = last_octet
         self.username = username
         self.password = password
         self.team = team_number
+        self.name = name
 
 class Team:
     def __init__(self, team_number):
