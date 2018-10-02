@@ -42,11 +42,11 @@ def main():
     for team in teams:
         print(team.number)
 
-        print(team.ubuntu)
-        universal_linux_attack(team.ubuntu.ip)
-        print(team.centos)
-        universal_linux_attack(team.centos.ip)
-        print(team.pfsense)
+        print(team.ubuntu.ip)
+        universal_linux_attack(team.ubuntu)
+        print(team.centos.ip)
+        universal_linux_attack(team.centos)
+        print(team.pfsense.ip)
 
 def get_ssh_pub():
     home = expanduser("~")
