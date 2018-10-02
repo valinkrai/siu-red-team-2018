@@ -5,6 +5,7 @@
 ################################################################################
 
 from pexpect import pxssh
+import multiprocessing
 import datetime
 from os.path import expanduser
 
@@ -41,10 +42,16 @@ def main():
         print(team.number)
 
         print(team.ubuntu.ip)
-        universal_linux_attack(team.ubuntu)
+        e_process = multiprocessing.Process(target=universal_linux_attack, args=[team.ubuntu])
+        e_process.start()
+        e_process = multiprocessing.Process(target=universal_linux_attack, args=[team.centos])
+        e_process.start()
+        #universal_linux_attack(team.ubuntu)
         print(team.centos.ip)
-        universal_linux_attack(team.centos)
+        #universal_linux_attack(team.centos)
         print(team.pfsense.ip)
+    
+    e_process.join()
 
 def log_line(message, host, print=False):
     file_name = "team{0}-{1}.log".format(host.team, host.name)
