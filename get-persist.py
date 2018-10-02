@@ -10,7 +10,7 @@ from os.path import expanduser
 
 
 class Host:
-    def __init__(self, team_number, last_octet=0, base_ip=[172, 31, 20, 0], username="root", password="changeme"):
+    def __init__(self, team_number, last_octet=0, base_ip=[172, 25, 20, 0], username="root", password="changeme"):
         self.ip = "%d.%d.%d.%d" % (base_ip[0], base_ip[1], base_ip[2] + team_number, last_octet)
         self.last_octet = last_octet
         self.username = username
@@ -32,8 +32,6 @@ def main():
 
     teams_numbers = range(1,3)
     teams = []
-
-    base_ip = [172, 25, 20, 0]
 
     for i in teams_numbers:
         teams.append(Team(i))
