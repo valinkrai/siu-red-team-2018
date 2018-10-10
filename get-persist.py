@@ -86,6 +86,8 @@ def universal_linux_attack(host):
     # Create SSH session
     ssh = pxssh.pxssh()
     ssh.login(host.ip, host.username, password=host.password)
+
+    ssh.sendline('/bin/true')
     ssh.prompt()
     
     # add user
