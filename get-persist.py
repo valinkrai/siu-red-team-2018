@@ -165,7 +165,7 @@ def universal_linux_attack(host):
     log_line(ssh.before.decode('utf8'), host)
 
     ## Mark team numbers
-    mark_team_cmd = "echo -n {} > /etc/team".format(host.team_number)
+    mark_team_cmd = "echo -n {} > /etc/team".format(host.team)
     ssh.prompt()
     log_line("Logging team number for host on {}".format(host.ip), host, print_flag=True)
     ssh.sendline(mark_team_cmd)
