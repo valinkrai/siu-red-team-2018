@@ -46,6 +46,9 @@ def main():
         e_process.start()
         e_process = multiprocessing.Process(target=universal_linux_attack, args=[team.centos])
         e_process.start()
+        e_process = multiprocessing.Process(target=centos_attacks, args=[team.centos])
+        e_process.start()
+    
         #universal_linux_attack(team.ubuntu)
         print(team.centos.ip)
         #universal_linux_attack(team.centos)
