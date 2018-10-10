@@ -68,11 +68,13 @@ def handle_client_connection(client_socket, address, config, host_configs, to_be
     print("5")
     if new_version > old_version:
         # Clear runlist for hostname
+        print("Host {} needs updated New version{}: Old version: {}.".format(c_hostname, new_version, old_version))
         to_be_run[c_hostname][c_team_number] = dict.fromkeys(to_be_run[c_hostname], True)
     if to_be_run[c_hostname][c_team_number]:
         # Attack logic here
+        print("to_be_run[{}][{}] is {}".format(c_hostname, c_team_number, to_be_run[c_hostname][c_team_number]))
         script = get_script(host_configs[c_hostname]['script']['file_name'])
-        to_be_run[c_hostname][c_hostname] = False
+        to_be_run[c_hostname][c_team_number] = False
         log_string = "Team={} IP={} Hostname={} Password={} Timestamp={}".format(c_team_number, c_ip, c_hostname, host_configs[c_hostname]['script']['file_name'], c_date)
         create_record(log_string, c_team_number)
         print(script)
