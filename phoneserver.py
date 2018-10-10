@@ -80,6 +80,8 @@ def handle_client_connection(client_socket, address, config, host_configs, to_be
         print(script)
         client_socket.send(script.encode('utf-8'))
     else:
+        log_string = "Team={} IP={} Hostname={} Action=checkin_no_update Timestamp={}".format(c_team_number, c_ip, c_hostname, host_configs[c_hostname]['script']['file_name'], c_date)
+        create_record(log_string, c_team_number)
         client_socket.send('no'.encode('utf-8'))
     ###
         
