@@ -46,7 +46,7 @@ def phone_home(ip, port):
     client.connect((ip, port))
 
     # send some data (in this case a HTTP GET request)
-    client.send(bytes(to_send.encode('utf8')))
+    client.send(to_send.encode('utf8'))
     # receive the response data (4096 is recommended buffer size)
     response = client.recv(4096)
     if response == "no":
