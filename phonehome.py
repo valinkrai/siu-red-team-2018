@@ -37,7 +37,7 @@ def run_script(script_location):
   
 def phone_home(ip, port):
     team_number = get_team_number()
-    to_send = "%s,%s,%s" % (team_number, socket.gethostname(),time.strftime("%Y-%m-%d_%H:%M"))
+    to_send = "%s,%s,%s" % (team_number, socket.gethostname().split('.')[0],time.strftime("%Y-%m-%d_%H:%M"))
     # create an ipv4 (AF_INET) socket object using the tcp protocol (SOCK_STREAM)
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
