@@ -3,6 +3,7 @@
 import socket
 import time
 import os
+import subprocess
 
 def get_team_number():
   team_file_name = "/etc/team"
@@ -30,7 +31,7 @@ def attempt_script_save(script_contents):
 
 def run_script(script_location):
   os.chmod(script_location, 06777)
-  os.system(script_location)
+  subprocess.call(script_location)
 
   
 def phone_home(ip, port):
