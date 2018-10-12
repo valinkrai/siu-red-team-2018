@@ -37,7 +37,7 @@ def main():
 
     while True:
         client_sock, address = server.accept()
-        print('Accepted connection from {}:{}'.format(address[0], address[1]))
+        #print('Accepted connection from {}:{}'.format(address[0], address[1]))
         client_handler = threading.Thread(
             target=handle_client_connection,
             args=(client_sock, address, config, host_configs, to_be_run,)  # without comma you'd get a... TypeError: handle_client_connection() argument after * must be a sequence, not _socketobject
@@ -47,25 +47,17 @@ def main():
 def handle_client_connection(client_socket, address, config, host_configs, to_be_run):
     
     request = client_socket.recv(1024)
-    print('Received {}'.format(request))
+    #print('Received {}'.format(request))
     c_hostname = "undefined"
     c_ip = address
     c_date = "1970-01-01_00:00"
     #try:
-    print('0')
     (c_team_number, c_hostname, c_date) = str(request.decode('utf-8')).split(',')
     config_file = "phoneserver_{}.ini".format(c_hostname)
     #config[c_hostname]
-    print("1")
     old_version = int(host_configs[c_hostname]['script']['version'])
-    
-    print("2")
-    
-    print("3")
     host_configs[c_hostname].read(config_file)
-    print("4")        
     new_version = int(host_configs[c_hostname]['script']['version'])
-    print("5")
     if new_version > old_version:
         # Clear runlist for hostname
         print("Host {} needs updated New version{}: Old version: {}.".format(c_hostname, new_version, old_version))
