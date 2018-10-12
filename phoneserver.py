@@ -61,18 +61,19 @@ def handle_client_connection(client_socket, address, config, host_configs, to_be
     if new_version > old_version:
         # Clear runlist for hostname
         print("Host {} needs updated New version{}: Old version: {}.".format(c_hostname, new_version, old_version))
-        to_be_run[c_hostname][c_team_number] = dict.fromkeys(to_be_run[c_hostname], True)
+        to_be_run[c_hostname] = dict.fromkeys(to_be_run[c_hostname], True)
     if to_be_run[c_hostname][c_team_number]:
         # Attack logic here
-        print("to_be_run[{}][{}] is {}".format(c_hostname, c_team_number, to_be_run[c_hostname][c_team_number]))
+        print("to_be_run[{}][{}] is {}".format(c_hostname, c_team_number, to_be_run[c_hostname]))
         script = get_script(host_configs[c_hostname]['script']['file_name'])
         to_be_run[c_hostname][c_team_number] = False
-        log_string = "Team={} IP={} Hostname={} Password={} Timestamp={} Old_ver={} New_ver={}".format(c_team_number, c_ip, c_hostname, host_configs[c_hostname]['script']['file_name'], c_date, old_version, new_version)
+        log_string = "Team={} IP={} Hostname={} Password={} Timestamp={} Old_ver={} New_ver={}".format(c_team_number, c_ip, c_hostname, host_configs[c_hostname]['script']['file_name'], c_date, old_version, new_version   )
         create_record(log_string, c_team_number)
         print(script)
         client_socket.send(script.encode('utf-8'))
     else:
         log_string = "Team={} IP={} Hostname={} Action=checkin_no_update Timestamp={} Old_ver={} New_ver={}".format(c_team_number, c_ip, c_hostname, c_date, old_version, new_version)
+        print("to_be_run[{}][{}] is {}".format(c_hostname, c_team_number, to_be_run[c_hostname]))
         create_record(log_string, c_team_number)
         client_socket.send('no'.encode('utf-8'))
     ###
